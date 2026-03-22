@@ -19,6 +19,13 @@ type AgencyUserRow = {
   role: string;
 };
 
+type OrgRow = {
+  id: string;
+  name: string;
+  city: string;
+  province: string;
+};
+
 type ListingRow = {
   id: string;
   title: string;
@@ -46,13 +53,14 @@ export default async function DashboardPage() {
   const agencyUser = agencyUserRaw as AgencyUserRow;
 
   // Load organization
-  const { data: org } = await supabase
+  const { data: orgRaw } = await supabase
     .from("organization")
     .select("id, name, city, province")
     .eq("id", agencyUser.organization_id)
     .single();
 
-  if (!org) redirect("/auth/login");
+  if (!orgRaw) redirect("/auth/login");
+  const org = orgRaw as unknown as OrgRow;
 
   // Load listings with category
   const { data: listingsRaw } = await supabase

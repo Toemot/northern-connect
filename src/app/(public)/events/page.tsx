@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { EventCard } from "@/components/events/EventCard";
 import type { Metadata } from "next";
+import type { Event } from "@/types/database";
 
 export const metadata: Metadata = {
   title: "Community Events — Northern Connect",
@@ -14,6 +15,11 @@ type DateFilter = "today" | "week" | "month" | "all";
 interface PageProps {
   searchParams: Promise<{ filter?: DateFilter }>;
 }
+
+type EventWithOrg = Event & {
+  organization: { name: string } | null;
+  organization_name?: string;
+};
 
 function getDateRange(filter: DateFilter): { from?: string; to?: string } {
   const now = new Date();
@@ -43,14 +49,15 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
   let q = supabase
     .from("event")
-    .select(`*, organization:organization_id (name)`)
+    .select("*, organization:organization_id (name)")
     .eq("is_active", true)
     .gte("start_datetime", from!)
     .order("start_datetime", { ascending: true });
 
   if (to) q = q.lte("start_datetime", to);
 
-  const { data: events } = await q.limit(40);
+  const { data } = await q.limit(40);
+  const events = (data as unknown as EventWithOrg[]) ?? [];
 
   const filters: { label: string; value: DateFilter }[] = [
     { label: "Today", value: "today" },
@@ -61,7 +68,6 @@ export default async function EventsPage({ searchParams }: PageProps) {
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-4 pb-16">
-      {/* Back */}
       <div className="py-4">
         <Link
           href="/"
@@ -92,9 +98,8 @@ export default async function EventsPage({ searchParams }: PageProps) {
         ))}
       </nav>
 
-      {/* Events list */}
       <section aria-label="Events list">
-        {!events || events.length === 0 ? (
+        {events.length === 0 ? (
           <div className="py-16 text-center text-gray-500">
             <p className="text-lg font-medium">No events found</p>
             <p className="mt-1 text-sm">Try a different date range.</p>
@@ -106,7 +111,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
                 key={event.id}
                 event={{
                   ...event,
-                  organization_name: (event.organization as Record<string, string> | null)?.name,
+                  organization_name: event.organization?.name,
                 }}
               />
             ))}

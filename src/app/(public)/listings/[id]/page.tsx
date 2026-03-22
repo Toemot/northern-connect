@@ -10,6 +10,36 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+// Explicit types for joined query results
+type ListingDetail = {
+  id: string;
+  title: string;
+  description: string | null;
+  eligibility_notes: string | null;
+  languages_served: string[];
+  hours: Record<string, unknown> | null;
+  last_verified_at: string | null;
+  verified_by: string | null;
+  status: string;
+  organization: {
+    id: string;
+    name: string;
+    address: string | null;
+    city: string;
+    province: string;
+    phone: string | null;
+    email: string | null;
+    website: string | null;
+  };
+  category: {
+    id: string;
+    name: string;
+    slug: string;
+    icon_emoji: string | null;
+    layer: string;
+  } | null;
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const supabase = await createClient();
@@ -20,10 +50,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .eq("status", "active")
     .single();
 
-  if (!data) return { title: "Not Found — Northern Connect" };
+  const row = data as { title: string; description: string | null } | null;
+  if (!row) return { title: "Not Found — Northern Connect" };
   return {
-    title: `${data.title} — Northern Connect`,
-    description: data.description ?? undefined,
+    title: `${row.title} — Northern Connect`,
+    description: row.description ?? undefined,
   };
 }
 
@@ -31,20 +62,21 @@ export default async function ListingDetailPage({ params }: PageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: listing } = await supabase
+  const { data } = await supabase
     .from("listing")
     .select(`
-      *,
-      organization:organization_id ( * ),
+      id, title, description, eligibility_notes, languages_served,
+      hours, last_verified_at, verified_by, status,
+      organization:organization_id ( id, name, address, city, province, phone, email, website ),
       category:category_id ( id, name, slug, icon_emoji, layer )
     `)
     .eq("id", id)
     .eq("status", "active")
     .single();
 
-  if (!listing) notFound();
-
-  const org = listing.organization as Record<string, string>;
+  if (!data) notFound();
+  const listing = data as unknown as ListingDetail;
+  const org = listing.organization;
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-4 pb-16">
@@ -63,8 +95,7 @@ export default async function ListingDetailPage({ params }: PageProps) {
       <header>
         {listing.category && (
           <p className="mb-1 text-sm font-medium text-brand-500">
-            {(listing.category as Record<string, string>).icon_emoji}{" "}
-            {(listing.category as Record<string, string>).name}
+            {listing.category.icon_emoji} {listing.category.name}
           </p>
         )}
         <div className="flex items-start justify-between gap-3">
