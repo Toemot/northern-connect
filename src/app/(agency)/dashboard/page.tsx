@@ -11,6 +11,23 @@ export const metadata: Metadata = {
   robots: "noindex",
 };
 
+// Local types for joined query results (Supabase join types not auto-inferred)
+type AgencyUserRow = {
+  id: string;
+  organization_id: string;
+  display_name: string;
+  role: string;
+};
+
+type ListingRow = {
+  id: string;
+  title: string;
+  status: string;
+  last_verified_at: string | null;
+  updated_at: string;
+  category: { name: string; icon_emoji: string | null } | null;
+};
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -18,28 +35,36 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  // Load agency user + org
-  const { data: agencyUser } = await supabase
+  // Load agency user (separate query — avoids join type inference issues)
+  const { data: agencyUserRaw } = await supabase
     .from("agency_user")
-    .select("*, organization:organization_id (*)")
+    .select("id, organization_id, display_name, role")
     .eq("id", user.id)
     .single();
 
-  if (!agencyUser) redirect("/auth/login");
+  if (!agencyUserRaw) redirect("/auth/login");
+  const agencyUser = agencyUserRaw as AgencyUserRow;
 
-  const org = agencyUser.organization as Record<string, string>;
+  // Load organization
+  const { data: org } = await supabase
+    .from("organization")
+    .select("id, name, city, province")
+    .eq("id", agencyUser.organization_id)
+    .single();
 
-  // Load listings for this org
-  const { data: listings } = await supabase
+  if (!org) redirect("/auth/login");
+
+  // Load listings with category
+  const { data: listingsRaw } = await supabase
     .from("listing")
-    .select("*, category:category_id (name, icon_emoji)")
+    .select("id, title, status, last_verified_at, updated_at, category:category_id (name, icon_emoji)")
     .eq("organization_id", agencyUser.organization_id)
     .order("updated_at", { ascending: false });
 
-  const allListings = listings ?? [];
-  const active       = allListings.filter((l) => l.status === "active").length;
-  const needsReview  = allListings.filter((l) => l.status === "needs_review").length;
-  const inactive     = allListings.filter((l) => l.status === "inactive").length;
+  const allListings = (listingsRaw as unknown as ListingRow[]) ?? [];
+  const active      = allListings.filter((l) => l.status === "active").length;
+  const needsReview = allListings.filter((l) => l.status === "needs_review").length;
+  const inactive    = allListings.filter((l) => l.status === "inactive").length;
 
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -120,7 +145,6 @@ export default async function DashboardPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {allListings.map((listing) => {
-                  const cat = listing.category as Record<string, string> | null;
                   const overdue =
                     !listing.last_verified_at ||
                     listing.last_verified_at < ninetyDaysAgo;
@@ -128,9 +152,9 @@ export default async function DashboardPage() {
                     <tr key={listing.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-900">{listing.title}</p>
-                        {cat && (
+                        {listing.category && (
                           <p className="text-xs text-gray-500">
-                            {cat.icon_emoji} {cat.name}
+                            {listing.category.icon_emoji} {listing.category.name}
                           </p>
                         )}
                       </td>
