@@ -5,10 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
-import type { Metadata } from "next";
-
-// Note: metadata must be in a separate server component; this is a client component
-// If needed, add metadata in a layout above this route
+// Note: metadata must be in a separate server component (this is a client component)
+// Add metadata in a layout above this route if needed
 
 export default function LoginPage() {
   const [email, setEmail]       = useState("");

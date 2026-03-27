@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, formatTime } from "@/lib/utils";

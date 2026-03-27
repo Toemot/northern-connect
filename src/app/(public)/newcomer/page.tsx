@@ -148,7 +148,7 @@ export default function NewcomerGuidePage({
 
           <Section title="Finding a Real Estate Agent">
             <p className="text-sm text-gray-600 mb-2">
-              Search <strong>"Real Estate"</strong> on Northern Connect for agents
+              Search <strong>&ldquo;Real Estate&rdquo;</strong> on Northern Connect for agents
               listed in Prince George. Also check:
             </p>
             <OrgLink
@@ -160,7 +160,7 @@ export default function NewcomerGuidePage({
 
           <Section title="Children's Activities">
             <p className="text-sm text-gray-600">
-              Search these categories on Northern Connect for what's near you:
+              Search these categories on Northern Connect for what&apos;s near you:
             </p>
             <div className="flex flex-wrap gap-2 mt-2">
               {['youth-programs', 'sports-recreation', 'arts-culture', 'family-children'].map(slug => (
