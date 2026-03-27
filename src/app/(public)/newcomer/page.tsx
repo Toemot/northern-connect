@@ -13,12 +13,12 @@ const TABS = [
   { id: 'newcomers', label: '🌍 General Newcomers' },
 ];
 
-export default function NewcomerGuidePage({
+export default async function NewcomerGuidePage({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
-  const tab = searchParams?.tab ?? 'students';
+  const { tab = 'students' } = await searchParams;
 
   return (
     <main id="main-content" className="max-w-3xl mx-auto px-4 py-8">

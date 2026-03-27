@@ -25,11 +25,12 @@ interface PendingOrg {
 export default async function AdminPendingPage({
   searchParams,
 }: {
-  searchParams: { key?: string };
+  searchParams: Promise<{ key?: string }>;
 }) {
+  const { key } = await searchParams;
   // Simple secret key gate — set ADMIN_SECRET in Vercel env vars
   const secret = process.env.ADMIN_SECRET ?? 'change-me-in-vercel-env';
-  if (searchParams?.key !== secret) return notFound();
+  if (key !== secret) return notFound();
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -100,7 +101,7 @@ export default async function AdminPendingPage({
                   </p>
                 </div>
 
-                <ApproveRejectButtons orgId={org.id} adminKey={searchParams.key ?? ''} />
+                <ApproveRejectButtons orgId={org.id} adminKey={key ?? ''} />
               </div>
             </div>
           ))}
