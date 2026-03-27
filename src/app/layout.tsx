@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { DisclaimerModal, DisclaimerStrip } from "@/components/ui/DisclaimerNotice";
 
 export const metadata: Metadata = {
   title: "Northern Connect — Prince George",
@@ -24,7 +25,9 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <DisclaimerModal />
         {children}
+        <DisclaimerStrip />
       </body>
     </html>
   );
