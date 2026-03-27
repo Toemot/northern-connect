@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { DisclaimerModal, DisclaimerStrip } from "@/components/ui/DisclaimerNotice";
+import { InstallPrompt } from "@/components/ui/InstallPrompt";
 
 export const metadata: Metadata = {
   title: "Northern Connect — Prince George",
@@ -27,6 +28,7 @@ export default function RootLayout({
         </a>
         <DisclaimerModal />
         {children}
+        <InstallPrompt />
         <DisclaimerStrip />
       </body>
     </html>

@@ -14,6 +14,8 @@ export type Database = {
           website: string | null;
           latitude: number | null;
           longitude: number | null;
+          photo_url: string | null;
+          registration_status: 'pending' | 'approved' | 'rejected' | 'flagged';
           is_indigenous_org: boolean;
           indigenous_consent_on_file: boolean;
           is_active: boolean;
@@ -33,6 +35,7 @@ export type Database = {
           eligibility_notes: string | null;
           languages_served: string[];
           hours: Record<string, unknown> | null;
+          photo_url: string | null;
           last_verified_at: string | null;
           verified_by: string | null;
           status: "active" | "inactive" | "draft" | "needs_review";

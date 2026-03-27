@@ -13,12 +13,26 @@ export function ListingCard({ listing }: ListingCardProps) {
     new Date(listing.last_verified_at) >
       new Date(Date.now() - 90 * 24 * 60 * 60 * 1000); // 90 days
 
+  const photo = listing.organization?.photo_url ?? listing.photo_url ?? null;
+
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="block rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+      className="block rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 overflow-hidden"
       aria-label={`${listing.title} — ${listing.organization.name}`}
     >
+      {/* Photo banner */}
+      {photo && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={photo}
+          alt={listing.organization.name}
+          className="h-36 w-full object-cover"
+          loading="lazy"
+        />
+      )}
+
+      <div className="p-4">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           {listing.category && (
@@ -69,6 +83,7 @@ export function ListingCard({ listing }: ListingCardProps) {
             {listing.languages_served.length} languages
           </Badge>
         )}
+      </div>
       </div>
     </Link>
   );
