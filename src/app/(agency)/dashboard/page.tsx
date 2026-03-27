@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { PlusCircle, LogOut, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { PlusCircle, CalendarPlus, LogOut, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { VerifyButton } from "./VerifyButton";
 import { createClient } from "@/lib/supabase/server";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
@@ -125,7 +126,14 @@ export default async function DashboardPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
         >
           <PlusCircle className="h-4 w-4" aria-hidden />
-          Add New Listing
+          Add Listing
+        </Link>
+        <Link
+          href="/events/new"
+          className="inline-flex items-center gap-2 rounded-xl border border-brand-500 px-4 py-2.5 text-sm font-semibold text-brand-600 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        >
+          <CalendarPlus className="h-4 w-4" aria-hidden />
+          Add Event
         </Link>
       </div>
 
@@ -187,10 +195,11 @@ export default async function DashboardPage() {
                           <span className="text-red-500">Never verified</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        <VerifyButton listingId={listing.id} />
                         <Link
                           href={`/listings/${listing.id}/edit`}
-                          className="mr-3 text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+                          className="text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
                         >
                           Edit
                         </Link>

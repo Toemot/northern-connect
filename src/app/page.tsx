@@ -67,7 +67,19 @@ export default function HomePage() {
           <Link href="/" className="text-lg font-bold text-brand-700">
             Northern Connect
           </Link>
-          <div className="flex items-center gap-3">
+          <nav className="flex items-center gap-3" aria-label="Main navigation">
+            <Link
+              href="/events"
+              className="text-sm font-medium text-gray-600 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+            >
+              Events
+            </Link>
+            <Link
+              href="/newcomer"
+              className="text-sm font-medium text-gray-600 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+            >
+              New Here?
+            </Link>
             <Link
               href="/register"
               className="text-sm font-medium text-brand-700 border border-brand-200 rounded-lg px-3 py-1.5 hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -80,7 +92,7 @@ export default function HomePage() {
             >
               Login
             </Link>
-          </div>
+          </nav>
         </div>
       </header>
 
