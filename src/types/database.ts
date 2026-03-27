@@ -112,6 +112,6 @@ export type IndigenousConsent = Database["public"]["Tables"]["indigenous_consent
 
 // Listing joined with organization and category (for display)
 export type ListingWithDetails = Listing & {
-  organization: Pick<Organization, "id" | "name" | "phone" | "email" | "website" | "address" | "city" | "latitude" | "longitude">;
+  organization: Pick<Organization, "id" | "name" | "phone" | "email" | "website" | "address" | "city" | "latitude" | "longitude" | "photo_url">;
   category: Pick<Category, "id" | "name" | "slug" | "icon_emoji" | "layer"> | null;
 };

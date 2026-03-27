@@ -33,7 +33,7 @@ export default function HomePage() {
       .from("listing")
       .select(`
         *,
-        organization:organization_id ( id, name, phone, email, website, address, city, latitude, longitude ),
+        organization:organization_id ( id, name, phone, email, website, address, city, latitude, longitude, photo_url ),
         category:category_id ( id, name, slug, icon_emoji, layer )
       `)
       .eq("status", "active")
